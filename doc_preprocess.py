@@ -1,3 +1,8 @@
+import nltk
+nltk.download('wordnet')
+nltk.download('stopwords')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('tagsets')
 from nltk.corpus import stopwords 
 from nltk.tokenize import RegexpTokenizer 
 from nltk.stem import WordNetLemmatizer
@@ -50,6 +55,52 @@ def tokenize_doc(doc):
             ))
     ))
     logger.info('Unique word post tokenize: ' + str(unique_words_post))
+
     return doc_stopped
 
-tokenize_doc(doc)
+
+def lemmatize_doc(tokenized_doc):
+    logger = logging.getLogger('LEMMATIZE_DOC')
+    lemmatizer = WordNetLemmatizer().lemmatize
+
+    pos_dict = {
+    'RB': 'r',
+    'NN': 'n',
+    'VB': 'v',
+    'JJ': 'a'
+    }
+
+    doc_lem = []
+    for entry in tokenized_doc:
+        entry_lem = []
+        for token in entry:
+            """tag = nltk.pos_tag([token])[0][1]
+            try:
+                pos_dict[tag]
+            except KeyError:
+                pos = 'n'
+            else:
+                pos = pos_dict[tag]
+            token_lem = lemmatizer(token, pos=pos)"""
+            token_lem = lemmatizer(token, pos='v')
+            entry_lem.append(token_lem)
+        doc_lem.append(entry_lem)
+
+    unique_words_lem = len(set(
+    chain(*(
+        set(entry) for entry in doc_lem
+        ))
+    ))
+    logger.info('Unique word post lemmatization: ' + str(unique_words_lem))
+
+    return doc_lem
+
+
+def main():
+    doc_token = tokenize_doc(doc)
+    doc_lem = lemmatize_doc(doc_token)
+    print(doc_lem)
+
+
+if __name__ == "__main__":
+    main()
